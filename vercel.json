@@ -1,8 +1,12 @@
 {
   "routes": [
     {
+      "src": "/main.js/(.*)",
+      "dest": "/main.js/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/Projetofinal/$1"
+      "dest": "/main.js/index.html"
     }
   ]
 }
