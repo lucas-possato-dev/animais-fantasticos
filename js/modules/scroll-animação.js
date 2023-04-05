@@ -1,21 +1,40 @@
-export default function initAnimaScroll() {
-  const sections = document.querySelectorAll('[data-anime="scroll"]');
-  const windowPercent = window.innerHeight * 0.6;
+export default class ScrollAnima {
+  constructor(sections) {
+    this.sections = document.querySelectorAll(sections);
+    this.windowPercent = window.innerHeight * 0.6;
+    this.checkDistance = this.checkDistance.bind(this);
+  }
 
-  function animaScroll() {
-    sections.forEach((section) => {
-      const sectionTop = section.getBoundingClientRect().top;
-      const isSectionVisible = (sectionTop - windowPercent) < 0;
-      if (isSectionVisible) section.classList.add('ativo');
-      else if (section.classList.contains('ativo')) section.classList.remove('ativo');
+  getDistance() {
+    this.distance = [...this.sections].map((section) => {
+      const offset = section.offsetTop;
+      return {
+        element: section,
+        offset: Math.floor(offset - this.windowPercent),
+      };
     });
   }
 
-  if (sections.length) {
-    // sections[0].classList.add("ativo");
-    // Não precisa disso porque é só ativar a função animaScroll ao iniciar o site.
-    animaScroll();
+  checkDistance() {
+    this.distance.forEach((item) => {
+      if (window.pageYOffset > item.offset) {
+        item.element.classList.add('ativo');
+      } else if (item.element.classList.contains('ativo')) {
+        item.element.classList.remove('ativo');
+      }
+    });
+  }
 
-    window.addEventListener('scroll', animaScroll);
+  init() {
+    if (this.sections.length) {
+      this.getDistance();
+      this.checkDistance();
+      window.addEventListener('scroll', this.checkDistance);
+    }
+    return this;
+  }
+
+  stop() {
+    window.removeEventListener('scroll', this.checkDistance);
   }
 }
